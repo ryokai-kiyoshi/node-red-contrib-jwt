@@ -88,6 +88,7 @@ module.exports = function (RED) {
         this.alg = n.alg;
         this.jwkurl = n.jwkurl;
         this.secret = n.secret;
+        this.secretEncoding = n.secretEncoding;
         this.key = n.key;
         this.signvar = n.signvar;
         this.storetoken = n.storetoken;
@@ -133,6 +134,11 @@ module.exports = function (RED) {
                     node.secret = process.env.NODE_RED_NODE_JWT_PUBLIC_KEY || fs.readFileSync(node.key);
                 } else {
                     node.secret = process.env.NODE_RED_NODE_JWT_SECRET || node.secret;
+                    
+                    if('base64url' === node.secretEncoding){
+                        node.secret = b64.toBuffer(node.secret);
+                        node.warn("converted base64url secret.");
+                    }
                 }
             }
 
