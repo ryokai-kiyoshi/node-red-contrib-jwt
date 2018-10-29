@@ -23,6 +23,7 @@ module.exports = function (RED) {
 
         node.on('input', function (msg) {
             try {
+                var currentSecret;
                 if (node.jwk) {
                     //use JWK to sign
                     var key = node.jwk.findKeyById(node.jwkkid);
@@ -30,6 +31,7 @@ module.exports = function (RED) {
                         console.log("No Key Found in JWK: " + node.jwkkid)
                     }
                     node.secret = key.key.toPrivateKeyPEM();
+                    currentSecret = node.secret;
                 } else if (node.alg === 'RS256' ||
                         node.alg === 'RS384' ||
                         node.alg === 'RS512' || 
@@ -37,11 +39,14 @@ module.exports = function (RED) {
                         node.alg === 'ES384' ||
                         node.alg === 'ES512') {
                     node.secret = process.env.NODE_RED_NODE_JWT_PRIVATE_KEY || fs.readFileSync(node.key);
+                    currentSecret = node.secret;
+
                 } else {
                     node.secret = process.env.NODE_RED_NODE_JWT_SECRET || node.secret;
+                    currentSecret = node.secret;
 
                     if('base64url' === node.secretEncoding){
-                        node.secret = b64.toBuffer(node.secret);
+                        currentSecret = b64.toBuffer(node.secret);
                     }
                 }
                 var opt = {algorithm: node.alg, expiresIn: node.exp, keyid: node.jwkkid};
@@ -54,7 +59,7 @@ module.exports = function (RED) {
                 }
                 node.warn('opt:'+opt)
                 jwt.sign(msg[node.signvar],
-                        node.secret,
+                        currentSecret,
                         opt, function (err, token) {
                     if (err) {
                         node.error(err);
@@ -109,7 +114,7 @@ module.exports = function (RED) {
                     msg.bearer = msg.req.body.access_token;
                 }
             }
-
+            var currentSecret;
             if (node.jwk) {
                 //use JWK to verify
                 var header = GetTokenHeader(msg[node.signvar]);
@@ -126,20 +131,23 @@ module.exports = function (RED) {
                 
                 node.alg = header.alg;
                 node.secret = key.key.toPublicKeyPEM();
+                currentSecret = node.secret;
 
             } else {
                 if (contains(node.alg, 'RS256') || contains(node.alg, 'RS384') || contains(node.alg, 'RS512') || contains(node.alg, 'ES512') || contains(node.alg, 'ES384') || contains(node.alg, 'ES256')) {
                     node.secret = process.env.NODE_RED_NODE_JWT_PUBLIC_KEY || fs.readFileSync(node.key);
+                    currentSecret = node.secret;
                 } else {
                     node.secret = process.env.NODE_RED_NODE_JWT_SECRET || node.secret;
-                    
+                    currentSecret = node.secret;
+
                     if('base64url' === node.secretEncoding){
-                        node.secret = b64.toBuffer(node.secret);
+                        currentSecret = b64.toBuffer(node.secret);
                     }
                 }
             }
 
-            jwt.verify(msg[node.signvar], node.secret, {algorithms: node.alg}, function (err, decoded) {
+            jwt.verify(msg[node.signvar], currentSecret, {algorithms: node.alg}, function (err, decoded) {
                 if (err) {
                     msg['payload'] = err;
                     msg['statusCode'] = 401;
