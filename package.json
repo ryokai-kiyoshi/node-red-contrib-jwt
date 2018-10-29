@@ -1,11 +1,11 @@
 {
     "name": "node-red-contrib-jwt",
-    "version": "0.0.11",
-    "description": "JWT Validator and Signer ",
+    "version": "0.0.1-0.0.11",
+    "description": "JWT Validator and Signer modified by kao",
     "main": "index.js",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/chameleonbr/node-red-contrib-jwt.git"
+        "url": "git+https://github.com/ryokai-kiyoshi/node-red-contrib-jwt.git"
     },
     "keywords": [
         "jwt",
@@ -18,22 +18,23 @@
         }
     },
     "author": {
-        "name": "Andre Alexandre Avila"
+        "name": "RYOKAI, \"kao\" Kiyoshi"
     },
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/chameleonbr/node-red-contrib-jwt/issues"
+        "url": "https://github.com/ryokai-kiyoshi/node-red-contrib-jwt/issues"
     },
-    "homepage": "https://github.com/chameleonbr/node-red-contrib-jwt#readme",
+    "homepage": "https://github.com/ryokai-kiyoshi/node-red-contrib-jwt#readme",
     "dependencies": {
         "jsonwebtoken": "^8.2.1",
         "node-jwk": "^0.1.0",
+        "base64url": "^3.0.0",
         "request": "^2.87.0"
     },
     "maintainers": [
         {
-            "name": "chameleonbr",
-            "email": "chameleonbr@gmail.com"
+            "name": "RYOKAI, \"kao\" Kiyoshi",
+            "email": "ryokai@johaq.com"
         }
     ]
 }

@@ -1,6 +1,7 @@
 module.exports = function (RED) {
     var jwt = require('jsonwebtoken');
     var fs = require('fs');
+    var b64 = require('base64url');
     function JwtSign(n) {
         RED.nodes.createNode(this, n);
         this.name = n.name;
@@ -10,6 +11,7 @@ module.exports = function (RED) {
         this.jwkurl = n.jwkurl;
         this.jwkkid = n.jwkkid;
         this.secret = n.secret;
+        this.secretEncoding = n.secretEncoding;
         this.key = n.key;
         this.signvar = n.signvar;
         this.storetoken = n.storetoken;
@@ -37,6 +39,11 @@ module.exports = function (RED) {
                     node.secret = process.env.NODE_RED_NODE_JWT_PRIVATE_KEY || fs.readFileSync(node.key);
                 } else {
                     node.secret = process.env.NODE_RED_NODE_JWT_SECRET || node.secret;
+
+                    if('base64url' === node.secretEncoding){
+                        node.secret = b64.toBuffer(node.secret);
+                        node.warn("converted base64url secret.");
+                    }
                 }
                 jwt.sign(msg[node.signvar],
                         node.secret,
