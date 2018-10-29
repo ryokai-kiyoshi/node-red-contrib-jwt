@@ -42,14 +42,12 @@ module.exports = function (RED) {
 
                     if('base64url' === node.secretEncoding){
                         node.secret = b64.toBuffer(node.secret);
-                        node.warn("converted base64url secret.");
                     }
                 }
                 var opt = {algorithm: node.alg, expiresIn: node.exp, keyid: node.jwkkid};
                 var claim = msg[node.signvar];
                 if( claim.exp) {
                     delete opt.expiresIn;
-                    node.warn('delete opt.expireIn');
                 }
                 if( msg.option){
                     Object.assign(opt, msg.option);
@@ -137,7 +135,6 @@ module.exports = function (RED) {
                     
                     if('base64url' === node.secretEncoding){
                         node.secret = b64.toBuffer(node.secret);
-                        node.warn("converted base64url secret.");
                     }
                 }
             }
