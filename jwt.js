@@ -45,6 +45,14 @@ module.exports = function (RED) {
                         node.warn("converted base64url secret.");
                     }
                 }
+                var opt = {algorithm: node.alg, expiresIn: node.exp, keyid: node.jwkkid};
+                var claim = msg[node.signvar];
+                if( claim.exp) {
+                    delete opt.expiresIn;
+                }
+                if( msg.option){
+                    Object.assign(msg.option);
+                }
                 jwt.sign(msg[node.signvar],
                         node.secret,
                         {algorithm: node.alg, expiresIn: node.exp, keyid: node.jwkkid}, function (err, token) {
