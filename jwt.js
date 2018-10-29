@@ -49,13 +49,15 @@ module.exports = function (RED) {
                 var claim = msg[node.signvar];
                 if( claim.exp) {
                     delete opt.expiresIn;
+                    node.warn('delete opt.expireIn');
                 }
                 if( msg.option){
-                    Object.assign(msg.option);
+                    Object.assign(opt, msg.option);
                 }
+                node.warn('opt:'+opt)
                 jwt.sign(msg[node.signvar],
                         node.secret,
-                        {algorithm: node.alg, expiresIn: node.exp, keyid: node.jwkkid}, function (err, token) {
+                        opt, function (err, token) {
                     if (err) {
                         node.error(err);
                     } else {
